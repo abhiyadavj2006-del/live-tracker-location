@@ -22,8 +22,8 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(__dirname + "/public"))
 
-// Legacy alias for the old /weather.png reference (weather.html now uses /weather.svg).
-// Serves a tiny valid PNG so /weather.png no longer 404s.
+// Legacy alias for the old /weather.png reference (weather.html now uses an inline SVG data URI for its icon).
+// Serves a 1x1 transparent PNG so /weather.png no longer 404s.
 app.get("/weather.png", (req, res) => {
     res.type("png").send(Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAwMCAO+ip1sAAAAASUVORK5CYII=", "base64"))
 })
