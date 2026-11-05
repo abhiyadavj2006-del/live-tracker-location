@@ -31,7 +31,7 @@ router.route("/weather").get((req, res) => {
     res.render("weather")
 }).post((req, res) => {
     const { id, lat, lng } = req.body
-    if (id == null || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) {
+    if (id == null || id === "" || lat === "" || lng === "" || !Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng))) {
         return res.status(400).send("Missing or invalid id, lat or lng")
     }
     if (TARGETS[id] == null) {
