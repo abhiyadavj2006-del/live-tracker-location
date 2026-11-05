@@ -17,6 +17,7 @@ app.set("io", io) // router.js reads the Socket.IO server from app settings, not
 
 app.set("view engine", "html")
 app.engine("html", tarkine.renderFile)
+app.set("views", __dirname);
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(__dirname + "/public"))
