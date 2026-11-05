@@ -24,6 +24,8 @@
     <form action="/login" method="post">
         <h1 class="title">Login</h1>
 
+        <p id="login-error" class="notification is-danger" hidden>Invalid username or password. Please try again.</p>
+
         <div class="field">
             <input type="text" class="input" placeholder="Username" required name="username">
         </div>
@@ -34,6 +36,22 @@
 
         <input type="submit" value="Login" class="button is-fullwidth is-primary">
     </form>
+
+    <script>
+        // The server redirects a failed login to /login?error=invalid (or ?error=config
+        // when login is not configured). Showing the reason here stops a failed login
+        // from silently looping back to this page.
+        const params = new URLSearchParams(location.search)
+        const loginError = document.querySelector("#login-error")
+        const errorKind = params.get("error")
+        if (loginError && errorKind === "invalid") {
+            loginError.textContent = "Invalid username or password. Please try again."
+            loginError.hidden = false
+        } else if (loginError && errorKind === "config") {
+            loginError.textContent = "Login is not configured on this server. Set TRACKER_USERNAME and TRACKER_PASSWORD and restart the server."
+            loginError.hidden = false
+        }
+    </script>
 </body>
 
 </html>

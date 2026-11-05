@@ -36,6 +36,7 @@
 
 <body>
     <h4>ID: <span id="display-id"></span></h4>
+    <p id="map-notice" hidden>No location has been shared for this ID yet. The map shows a default view and will update live when location data arrives.</p>
     <div id="map"></div>
 
 
@@ -44,7 +45,23 @@
     <script>
         const displayId = document.querySelector("#display-id")
         const id = new URLSearchParams(location.search).get("id")
-        const latLng = JSON.parse(`{{ data }}`)
+        // The server renders data as a JSON string, or "null" when this ID has no saved location.
+// Never let a missing/unknown ID crash the page: fall back to a default view.
+let latLng = [0, 0]
+let hasLocation = false
+try {
+  const parsed = JSON.parse(`{{ data }}`)
+  if (Array.isArray(parsed) && parsed.length === 2 && Number.isFinite(Number(parsed[0])) && Number.isFinite(Number(parsed[1]))) {
+    latLng = [Number(parsed[0]), Number(parsed[1])]
+    hasLocation = true
+  }
+} catch (error) {
+  console.warn("No saved location for this ID yet; showing the default map view.", error)
+}
+if (!hasLocation) {
+  const notice = document.querySelector("#map-notice")
+  if (notice) notice.hidden = false
+}
         const map = L.map('map').setView(latLng, 12)
         const marker = L.marker(latLng).addTo(map)
 
@@ -58,16 +75,18 @@
             transports: ['websocket']
         })
 
-        displayId.innerHTML = id
+        displayId.textContent = id ?? "(unknown)"
         // on update
         socket.on("map-data", data => {
-            if (data.id == id) {
-                displayId.innerHTML = `${id} - updating`
+            if (data.id == id && Number.isFinite(Number(data.lat)) && Number.isFinite(Number(data.lng))) {
+                displayId.textContent = `${id ?? "(unknown)"} - updating`
                 marker.setLatLng([data.lat, data.lng])
                 map.setView([data.lat, data.lng])
+    const notice = document.querySelector("#map-notice")
+    if (notice) notice.hidden = true
 
                 setTimeout(() => {
-                    displayId.innerHTML = id
+                    displayId.textContent = id ?? "(unknown)"
                 }, 2500)
             }
         })
