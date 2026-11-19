@@ -9,6 +9,9 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "24"
+  },
   "dependencies": {
     "cloudflared": "^0.5.3",
     "cookie-parser": "^1.4.7",
