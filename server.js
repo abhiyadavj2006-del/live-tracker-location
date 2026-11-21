@@ -1,4 +1,3 @@
-const { tunnel: cloudflaredTunnel } = require("cloudflared")
 const cookieParser = require("cookie-parser")
 const socketIO = require("socket.io")
 const config = require("./config")
@@ -10,8 +9,7 @@ const app = express()
 const server = http.createServer(app)
 const io = new socketIO.Server(server)
 const PORT = process.env.PORT || config.port
-let remoteURL = null
-app.set("remoteURL", null) // Home page reads the tunnel URL from app settings, not a global.
+app.set("remoteURL", null) // No tunnel is used: the platform serves the app directly. Home page reads the URL from app settings, not a global.
 
 app.set("io", io) // router.js reads the Socket.IO server from app settings, not a global.
 
@@ -31,17 +29,8 @@ app.use(express.json())
 
 app.use("/", require("./router"))
 
-server.listen(PORT, async () => {
+server.listen(PORT, () => {
     const localURL = `http://localhost:${PORT}`
-    try {
-        remoteURL = await cloudflaredTunnel({
-            "--url": localURL
-        }).url
-        app.set("remoteURL", remoteURL)
-    } catch (error) {
-        console.warn("Remote tunnel unavailable - the app still works locally:", error.message)
-    }
 
     console.log(`LOCAL  : ${localURL}`)
-    console.log(`REMOTE : ${remoteURL || "not available"}`)
 })
