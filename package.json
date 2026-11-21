@@ -13,7 +13,6 @@
     "node": "24"
   },
   "dependencies": {
-    "cloudflared": "^0.5.3",
     "cookie-parser": "^1.4.7",
     "express": "^4.21.1",
     "socket.io": "^4.8.1",
